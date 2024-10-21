@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Web UI with Custom Background</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://i.ibb.co/n63z3rv/image.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .prediction-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid red;
+            padding: 20px;
+            text-align: center;
+            width: 250px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .prediction-text {
+            font-size: 48px;
+            color: red;
+            margin: 20px 0;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .time-display {
+            font-size: 24px;
+            color: red;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid red;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Show/hide content with opacity transition */
+        .show {
+            opacity: 1 !important;
+        }
+
+        .hide {
+            opacity: 0 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="prediction-box">
+    <div id="prediction" class="prediction-text"></div> <!-- Empty for dynamic content -->
+    <div id="loading" class="spinner"></div>
+    <div id="time" class="time-display"></div>
+</div>
+
+<script>
+    // Function to update the time in Asia/Kolkata timezone
+    function updateTime() {
+        let options = { timeZone: 'Asia/Kolkata', hour12: false };
+        let time = new Date().toLocaleTimeString('en-GB', options);
+        document.getElementById('time').textContent = time;
+    }
+
+    // Function to show prediction through loading animation
+    function updatePrediction() {
+        const predictions = ["BIG", "SMALL"];
+        let now = new Date();
+        let seconds = now.getSeconds();
+        let currentMinute = now.getMinutes();
+
+        // Check if seconds are 00 to start loading animation
+        if (seconds === 0) {
+            // Show loading spinner and hide the prediction initially
+            document.getElementById('loading').style.display = "block";
+            document.getElementById('prediction').classList.remove('show');
+            document.getElementById('prediction').classList.add('hide');
+
+            // After a delay (2 seconds), show the prediction and hide the loading spinner
+            setTimeout(() => {
+                let prediction = predictions[currentMinute % 2];
+                document.getElementById('prediction').textContent = prediction;
+                
+                // Hide loading spinner and show the prediction with animation
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('prediction').classList.remove('hide');
+                document.getElementById('prediction').classList.add('show');
+            }, 2000); // 2 seconds loading animation
+        }
+    }
+
+    // Initial call to display the time
+    updateTime();
+
+    // Update time every second
+    setInterval(updateTime, 1000);
+
+    // Check every second to update prediction only when seconds are 00
+    setInterval(updatePrediction, 1000);
+</script>
+
+</body>
+</html>
